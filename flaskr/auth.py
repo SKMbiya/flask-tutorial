@@ -50,18 +50,18 @@ def login():
             'SELECT * FROM user WHERE username = ?', (username,)
         ).fetchone()
 
-        if user in None:
-            error = 'Incorrect username'
+        if user is None:
+            error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password'
-        
+            error = 'Incorrect password.'
+
         if error is None:
             session.clear()
             session['user_id'] = user['id']
             return redirect(url_for('index'))
-        
+
         flash(error)
-    
+
     return render_template('auth/login.html')
 
 @bp.before_app_request
@@ -78,10 +78,10 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirection(url_for('index'))
+    return redirect(url_for('index'))
 
 def login_required(view):
-    @functools.wrap(view)
+    @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
